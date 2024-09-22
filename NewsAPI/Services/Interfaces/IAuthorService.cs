@@ -1,4 +1,4 @@
-﻿using NewsAPI.Dtos;
+﻿using NewsAPI.DTOs;
 using NewsAPI.Models;
 using NewsAPI.Shared;
 

@@ -5,6 +5,7 @@ using Microsoft.IdentityModel.Tokens;
 using NewsAPI.Data;
 using NewsAPI.Models;
 using NewsAPI.Services;
+using NewsAPI.Services.Interfaces;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -15,6 +16,7 @@ var secretKey = jwtSettings["Key"];
 #region Services
 builder.Services.AddScoped<IArticleService, ArticleService>();
 builder.Services.AddScoped<IAuthorService, AuthorService>();
+builder.Services.AddScoped<IUserService, UserService>();
 
 #endregion
 

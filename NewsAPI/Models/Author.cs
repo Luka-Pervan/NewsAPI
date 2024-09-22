@@ -15,6 +15,8 @@
         public string Bio { get; set; }
         public List<Article> Articles { get; set; }
 
+        public int UserId { get; set; }
+        public User User { get; set; }  // Navigation property
         #endregion
 
     }

@@ -1,4 +1,4 @@
-﻿namespace NewsAPI.Dtos
+﻿namespace NewsAPI.DTOs
 {
     public class AuthorDTO
     {

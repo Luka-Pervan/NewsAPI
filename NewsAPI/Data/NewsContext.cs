@@ -28,6 +28,13 @@ namespace NewsAPI.Data
                         .HasOne(a => a.Author)
                         .WithMany(b => b.Articles)
                         .HasForeignKey(a => a.AuthorId);
+
+            modelBuilder.Entity<Author>()
+                .HasOne(a => a.User)
+                .WithOne() // Each User can have only one Author
+                .HasForeignKey<Author>(a => a.UserId)
+                .OnDelete(DeleteBehavior.Cascade); // Optional: set behavior on user deletion
+
         }
 
         #endregion

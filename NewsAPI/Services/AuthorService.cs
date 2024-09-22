@@ -2,7 +2,7 @@
 using NewsAPI.Models;
 using Microsoft.EntityFrameworkCore;
 using NewsAPI.Shared;
-using NewsAPI.Dtos;
+using NewsAPI.DTOs;
 
 namespace NewsAPI.Services
 {
