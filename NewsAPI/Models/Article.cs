@@ -1,4 +1,7 @@
-﻿namespace NewsAPI.Models
+﻿using Microsoft.EntityFrameworkCore;
+using NewsAPI.Dtos;
+
+namespace NewsAPI.Models
 {
     public class Article
     {
@@ -13,7 +16,7 @@
         public int Id { get; set; }
         public string Title { get; set; }
         public string Content { get; set; }
-        public DateTime PublishedAt { get; set; }
+        public DateTime PublishedDate { get; set; }
         public int AuthorId { get; set; }
         public Author Author { get; set; }
 

@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using NewsAPI.Dtos;
 using NewsAPI.Models;
 using NewsAPI.Services;
 
@@ -17,57 +19,72 @@ namespace NewsAPI.Controllers
 
         // GET: api/authors
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Author>>> GetAllAuthors()
+        public async Task<IActionResult> GetAllAuthors()
         {
-            var authors = await _authorService.GetAllAuthorsAsync();
-            return Ok(authors);
+            var result = await _authorService.GetAllAuthorsAsync();
+
+            if (!result.Succeeded)
+                return BadRequest(result.ErrorMessage);
+
+            return Ok(result.Data); // Return the list of authors
         }
 
         // GET: api/authors/{id}
         [HttpGet("{id}")]
-        public async Task<ActionResult<Author>> GetAuthorById(int id)
+        public async Task<IActionResult> GetAuthorById(int id)
         {
-            var author = await _authorService.GetAuthorByIdAsync(id);
-            if (author == null)
-                return NotFound();
+            var result = await _authorService.GetAuthorByIdAsync(id);
 
-            return Ok(author);
+            if (!result.Succeeded)
+                return NotFound(result.ErrorMessage);
+
+            return Ok(result.Data); // Return the author object
         }
 
         // POST: api/authors
         [HttpPost]
-        public async Task<ActionResult<Author>> CreateAuthor(Author author)
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> CreateAuthor([FromBody] AuthorDTO authorDto)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var createdAuthor = await _authorService.CreateAuthorAsync(author);
-            return CreatedAtAction(nameof(GetAuthorById), new { id = createdAuthor.Id }, createdAuthor);
+            var result = await _authorService.CreateAuthorAsync(authorDto);
+
+            if (!result.Succeeded)
+                return BadRequest(result.ErrorMessage);
+
+            return CreatedAtAction(nameof(GetAuthorById), new { id = result.Data.Id }, result.Data);
         }
 
         // PUT: api/authors/{id}
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateAuthor(int id, Author author)
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> UpdateAuthor(int id, [FromBody] AuthorDTO authorDto)
         {
-            if (id != author.Id || !ModelState.IsValid)
-                return BadRequest();
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
 
-            var updated = await _authorService.UpdateAuthorAsync(id, author);
-            if (!updated)
-                return NotFound();
+            var result = await _authorService.UpdateAuthorAsync(id, authorDto);
 
-            return NoContent();
+            if (!result.Succeeded)
+                return BadRequest(result.ErrorMessage);
+
+            return NoContent(); // Update successful
         }
 
         // DELETE: api/authors/{id}
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteAuthor(int id)
         {
-            var deleted = await _authorService.DeleteAuthorAsync(id);
-            if (!deleted)
-                return NotFound();
+            var result = await _authorService.DeleteAuthorAsync(id);
 
-            return NoContent();
+            if (!result.Succeeded)
+                return BadRequest(result.ErrorMessage);
+
+            return NoContent(); // Deletion successful
         }
+
     }
 }

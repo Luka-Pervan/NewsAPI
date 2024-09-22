@@ -1,6 +1,8 @@
 ﻿using NewsAPI.Data;
 using NewsAPI.Models;
 using Microsoft.EntityFrameworkCore;
+using NewsAPI.Shared;
+using NewsAPI.Dtos;
 
 namespace NewsAPI.Services
 {
@@ -14,50 +16,61 @@ namespace NewsAPI.Services
         }
 
         // Fetch all authors
-        public async Task<IEnumerable<Author>> GetAllAuthorsAsync()
+        public async Task<Result<IEnumerable<Author>>> GetAllAuthorsAsync()
         {
-            return await _context.Authors.Include(a => a.Articles).ToListAsync();
+            var authors = await _context.Authors.ToListAsync();
+            return Result<IEnumerable<Author>>.Success(authors);
         }
 
         // Fetch author by ID
-        public async Task<Author> GetAuthorByIdAsync(int id)
+        public async Task<Result<Author>> GetAuthorByIdAsync(int id)
         {
-            return await _context.Authors.Include(a => a.Articles)
-                                         .FirstOrDefaultAsync(a => a.Id == id);
+            var author = await _context.Authors.Include(a => a.Articles)
+                                               .FirstOrDefaultAsync(a => a.Id == id);
+            if (author == null)
+                return Result<Author>.Failure($"Author with id {id} not found.");
+            return Result<Author>.Success(author);
         }
 
         // Create a new author
-        public async Task<Author> CreateAuthorAsync(Author author)
+        public async Task<Result<Author>> CreateAuthorAsync(AuthorDTO authorDto)
         {
-            _context.Authors.Add(author);
+            var newAuthor = new Author
+            {
+                Name = authorDto.Name,
+                Bio = authorDto.Bio
+            };
+
+            _context.Authors.Add(newAuthor);
             await _context.SaveChangesAsync();
-            return author;
+            return Result<Author>.Success(newAuthor);
         }
 
         // Update an existing author
-        public async Task<bool> UpdateAuthorAsync(int id, Author author)
+        public async Task<Result> UpdateAuthorAsync(int id, AuthorDTO authorDto)
         {
             var existingAuthor = await _context.Authors.FindAsync(id);
-            if (existingAuthor == null) return false;
+            if (existingAuthor == null)
+                return Result.Failure($"Author with id {id} not found.");
 
-            existingAuthor.Name = author.Name;
+            existingAuthor.Name = authorDto.Name;
+            existingAuthor.Bio = authorDto.Bio;
 
             _context.Authors.Update(existingAuthor);
             await _context.SaveChangesAsync();
-
-            return true;
+            return Result.Success();
         }
 
         // Delete an author
-        public async Task<bool> DeleteAuthorAsync(int id)
+        public async Task<Result> DeleteAuthorAsync(int id)
         {
             var author = await _context.Authors.FindAsync(id);
-            if (author == null) return false;
+            if (author == null)
+                return Result.Failure($"Author with id {id} not found.");
 
             _context.Authors.Remove(author);
             await _context.SaveChangesAsync();
-
-            return true;
+            return Result.Success();
         }
     }
 }

@@ -1,13 +1,15 @@
-﻿using NewsAPI.Models;
+﻿using NewsAPI.Dtos;
+using NewsAPI.Models;
+using NewsAPI.Shared;
 
 namespace NewsAPI.Services
 {
     public interface IAuthorService
     {
-        Task<IEnumerable<Author>> GetAllAuthorsAsync();          // Fetch all authors
-        Task<Author> GetAuthorByIdAsync(int id);                // Fetch author by ID
-        Task<Author> CreateAuthorAsync(Author author);          // Create a new author
-        Task<bool> UpdateAuthorAsync(int id, Author author);    // Update an existing author
-        Task<bool> DeleteAuthorAsync(int id);                   // Delete an author
+        Task<Result<IEnumerable<Author>>> GetAllAuthorsAsync();         // Fetch all authors
+        Task<Result<Author>> GetAuthorByIdAsync(int id);               // Fetch author by ID
+        Task<Result<Author>> CreateAuthorAsync(AuthorDTO authorDto);   // Create a new author
+        Task<Result> UpdateAuthorAsync(int id, AuthorDTO authorDto);   // Update an existing author
+        Task<Result> DeleteAuthorAsync(int id);                        // Delete an author
     }
 }

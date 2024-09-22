@@ -88,4 +88,17 @@ app.UseAuthorization();
 
 app.MapControllers();
 
+// Create a scope to resolve services for seeding
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+
+    var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
+    var userManager = services.GetRequiredService<UserManager<User>>();
+
+    // Seed Roles and Admin user
+    await DbSeeder.SeedRolesAsync(roleManager);
+    await DbSeeder.SeedAdminUserAsync(userManager);
+}
+
 app.Run();
