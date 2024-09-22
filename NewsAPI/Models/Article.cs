@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using NewsAPI.Dtos;
+using NewsAPI.DTOs;
 
 namespace NewsAPI.Models
 {

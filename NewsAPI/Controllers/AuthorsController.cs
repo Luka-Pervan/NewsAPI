@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using NewsAPI.Dtos;
+using NewsAPI.DTOs;
 using NewsAPI.Models;
 using NewsAPI.Services;
 
