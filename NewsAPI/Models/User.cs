@@ -2,7 +2,7 @@
 
 namespace NewsAPI.Models
 {
-    public class User : IdentityUser
+    public class User : IdentityUser<int>
     {
         #region Constructors
         public User()

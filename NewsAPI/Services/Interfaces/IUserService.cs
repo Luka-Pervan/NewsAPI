@@ -6,7 +6,7 @@ namespace NewsAPI.Services.Interfaces
     public interface IUserService
     {
         Task<Result> RegisterUserAsync(UserRegistrationDTO registrationDto);
-        Task<Result> LoginUserAsync(UserLoginDTO loginDto);
+        Task<LoginResult> LoginUserAsync(UserLoginDTO loginDto);
         Task LogoutUserAsync();
     }
 }

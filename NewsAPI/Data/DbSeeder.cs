@@ -5,7 +5,7 @@ namespace NewsAPI.Data
 {
     public class DbSeeder
     {
-        public static async Task SeedRolesAsync(RoleManager<IdentityRole> roleManager)
+        public static async Task SeedRolesAsync(RoleManager<IdentityRole<int>> roleManager)
         {
             string[] roleNames = { "Admin", "Author", "Reader" };
             IdentityResult roleResult;
@@ -15,7 +15,7 @@ namespace NewsAPI.Data
                 var roleExist = await roleManager.RoleExistsAsync(roleName);
                 if (!roleExist)
                 {
-                    roleResult = await roleManager.CreateAsync(new IdentityRole(roleName));
+                    roleResult = await roleManager.CreateAsync(new IdentityRole<int>(roleName));
                 }
             }
         }
@@ -30,6 +30,9 @@ namespace NewsAPI.Data
                 {
                     UserName = "admin",
                     Email = "admin@example.com",
+                    FirstName = "AdminFirstName", 
+                    LastName = "AdminLastName",  
+                    Role = "Admin",
                     EmailConfirmed = true,
                 };
 

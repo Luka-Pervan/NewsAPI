@@ -1,11 +1,11 @@
-﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using NewsAPI.Models;
-using System.Collections.Generic;
 
 namespace NewsAPI.Data
 {
-    public class NewsContext : IdentityDbContext<User>
+    public class NewsContext : IdentityDbContext<User, IdentityRole<int>, int>
     {
         #region Constructors
         public NewsContext(DbContextOptions<NewsContext> options) : base(options) { }
@@ -22,6 +22,10 @@ namespace NewsAPI.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<User>()
+            .Property(u => u.Id)
+            .ValueGeneratedOnAdd();
 
             // Article -> Author relationship
             modelBuilder.Entity<Article>()

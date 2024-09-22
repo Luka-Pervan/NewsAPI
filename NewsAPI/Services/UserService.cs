@@ -3,23 +3,32 @@ using Microsoft.AspNetCore.Identity;
 using NewsAPI.Shared;
 using NewsAPI.Services.Interfaces;
 using NewsAPI.DTOs;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
+using Microsoft.Extensions.Configuration;
 
 public class UserService : IUserService
 {
     private readonly UserManager<User> _userManager;
     private readonly SignInManager<User> _signInManager;
+    private readonly IConfiguration _configuration;
 
-    public UserService(UserManager<User> userManager, SignInManager<User> signInManager)
+    public UserService(UserManager<User> userManager, SignInManager<User> signInManager, IConfiguration configuration)
     {
         _userManager = userManager;
         _signInManager = signInManager;
+        _configuration = configuration;
     }
 
     public async Task<Result> RegisterUserAsync(UserRegistrationDTO registrationDto)
     {
         var user = new User
         {
-            UserName = registrationDto.Email,
+            FirstName = registrationDto.FirstName,
+            LastName = registrationDto.LastName,
+            UserName = registrationDto.UserName,
             Email = registrationDto.Email,
             Role = registrationDto.Role
         };
@@ -30,23 +39,51 @@ public class UserService : IUserService
         {
             return Result.Success();
         }
-        return Result.Failure("Registration failed.");
+        return Result.Failure($"Registration failed. {string.Join(", ", result.Errors.Select(item => item.Code + "-" + item.Description))}");
     }
 
-    public async Task<Result> LoginUserAsync(UserLoginDTO loginDto)
+    public async Task<LoginResult> LoginUserAsync(UserLoginDTO loginDto)
     {
         var result = await _signInManager.PasswordSignInAsync(loginDto.Email, loginDto.Password, false, false);
-
         if (result.Succeeded)
         {
-            return Result.Success();
+            var user = await _userManager.FindByNameAsync(loginDto.Email);
+            var token = GenerateJwtToken(user);
+            return LoginResult.Success(token);
         }
-
-        return Result.Failure("Login failed.");
+        return LoginResult.Failure("Invalid login attempt.");
     }
 
     public async Task LogoutUserAsync()
     {
         await _signInManager.SignOutAsync();
     }
+
+    #region Methods
+    private string GenerateJwtToken(User user)
+    {
+        var claims = new List<Claim>
+        {
+            new Claim(JwtRegisteredClaimNames.Name, user.Id.ToString()),
+            new Claim(JwtRegisteredClaimNames.Email, user.Email),
+        };
+
+        var roles = _userManager.GetRolesAsync(user).Result;
+        claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role)));
+
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
+        var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+        var token = new JwtSecurityToken(
+            issuer: _configuration["Jwt:Issuer"],
+            audience: _configuration["Jwt:Audience"],
+            claims: claims,
+            expires: DateTime.Now.AddMinutes(30),
+            signingCredentials: creds
+        );
+
+        return new JwtSecurityTokenHandler().WriteToken(token);
+    }
+    #endregion
+
 }

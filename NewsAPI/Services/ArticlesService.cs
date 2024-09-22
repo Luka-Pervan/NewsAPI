@@ -25,7 +25,7 @@ namespace NewsAPI.Services
             }
             catch (Exception ex)
             {
-                return Result<IEnumerable<Article>>.Failure($"An error occurred while retrieving articles: {ex.Message}");
+                return Result<IEnumerable<Article>>.Failure($"An error occurred while retrieving articles: {ex.InnerException}");
             }
         }
 
@@ -44,7 +44,7 @@ namespace NewsAPI.Services
             }
             catch (Exception ex)
             {
-                return Result<Article>.Failure($"An error occurred while retrieving the article: {ex.Message}");
+                return Result<Article>.Failure($"An error occurred while retrieving the article: {ex.InnerException}");
             }
         }
 
@@ -68,7 +68,7 @@ namespace NewsAPI.Services
             }
             catch (Exception ex)
             {
-                return Result<Article>.Failure($"An error occurred while creating the article: {ex.Message}");
+                return Result<Article>.Failure($"An error occurred while creating the article: {ex.InnerException}");
             }
         }
 
@@ -86,7 +86,7 @@ namespace NewsAPI.Services
                 // Map the fields from the DTO
                 existingArticle.Title = articleDto.Title;
                 existingArticle.Content = articleDto.Content;
-                existingArticle.AuthorId = articleDto.AuthorId;
+                existingArticle.Id = id;
 
                 if (articleDto.PublishedDate.HasValue)
                 {
@@ -100,7 +100,7 @@ namespace NewsAPI.Services
             }
             catch (Exception ex)
             {
-                return Result.Failure($"An error occurred while updating the article: {ex.Message}");
+                return Result.Failure($"An error occurred while updating the article: {ex.InnerException}");
             }
         }
 
@@ -122,7 +122,7 @@ namespace NewsAPI.Services
             }
             catch (Exception ex)
             {
-                return Result.Failure($"An error occurred while deleting the article: {ex.Message}");
+                return Result.Failure($"An error occurred while deleting the article: {ex.InnerException}");
             }
         }
 

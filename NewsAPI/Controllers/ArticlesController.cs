@@ -43,7 +43,7 @@ namespace NewsAPI.Controllers
 
         // POST: api/articles
         [HttpPost]
-        [Authorize(Roles = "Admin, Author")]
+        //[Authorize(Roles = "Admin, Author")]
         public async Task<IActionResult> CreateArticle([FromBody] ArticleDto articleDto)
         {
             if (!ModelState.IsValid)
@@ -59,7 +59,7 @@ namespace NewsAPI.Controllers
         }
 
         // PUT: api/articles/{id}
-        [Authorize(Roles = "Admin, Author")]
+        //[Authorize(Roles = "Admin, Author")]
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateArticle(int id, [FromBody] ArticleDto articleDto)
         {
@@ -77,7 +77,7 @@ namespace NewsAPI.Controllers
 
         // DELETE: api/articles/{id}
         [HttpDelete("{id}")]
-        [Authorize(Roles = "Admin, Author")]
+        //[Authorize(Roles = "Admin, Author")]
         public async Task<IActionResult> DeleteArticle(int id)
         {
             var result = await _articleService.DeleteArticleAsync(id);

@@ -45,4 +45,20 @@
             };
         }
     }
+
+    public class LoginResult : Result
+    {
+        public string Token { get; private set; }
+
+        public static LoginResult Success(string token)
+        {
+            return new LoginResult { Succeeded = true, Token = token };
+        }
+
+        public static new LoginResult Failure(string errorMessage)
+        {
+            return new LoginResult { Succeeded = false, ErrorMessage = errorMessage };
+        }
+    }
+
 }

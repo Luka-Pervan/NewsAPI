@@ -9,7 +9,7 @@ using NewsAPI.Services.Interfaces;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
-// Read JWT settings from appsettings.json
+
 var jwtSettings = builder.Configuration.GetSection("Jwt");
 var secretKey = jwtSettings["Key"];
 
@@ -50,11 +50,17 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("Admin", policy => policy.RequireRole("Admin"));
+    options.AddPolicy("Author", policy => policy.RequireRole("Author"));
+});
+
 #endregion
 
 #region User identity
 // Add Identity services and configure them to use EF Core
-builder.Services.AddIdentity<User, IdentityRole>(options =>
+builder.Services.AddIdentity<User, IdentityRole<int>> (options =>
 {
     // Password settings
     options.Password.RequireDigit = true;
@@ -73,7 +79,16 @@ builder.Services.AddIdentity<User, IdentityRole>(options =>
 })
 .AddEntityFrameworkStores<NewsContext>()
 .AddDefaultTokenProviders();
+
 #endregion
+
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.Preserve;
+        options.JsonSerializerOptions.MaxDepth = 64; 
+    });
+
 
 var app = builder.Build();
 
@@ -95,7 +110,7 @@ using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
 
-    var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
+    var roleManager = services.GetRequiredService<RoleManager<IdentityRole<int>>>();
     var userManager = services.GetRequiredService<UserManager<User>>();
 
     // Seed Roles and Admin user

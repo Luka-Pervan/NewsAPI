@@ -37,6 +37,7 @@ namespace NewsAPI.Services
         {
             var newAuthor = new Author
             {
+                AuthorUserId = authorDto.AuthorUserId,
                 Name = authorDto.Name,
                 Bio = authorDto.Bio
             };

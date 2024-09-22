@@ -30,7 +30,7 @@ public class UsersController : ControllerBase
         var result = await _userService.LoginUserAsync(loginDto);
         if (result.Succeeded)
         {
-            return Ok("User logged in successfully.");
+            return Ok(new { token = result.Token }); // Return the JWT token
         }
         return BadRequest(result.ErrorMessage);
     }

@@ -5,7 +5,6 @@
         #region Constructors
         public Author()
         {
-            Articles = new List<Article>();
         }
         #endregion
 
@@ -15,7 +14,7 @@
         public string Bio { get; set; }
         public List<Article> Articles { get; set; }
 
-        public string AuthorUserId { get; set; }
+        public int AuthorUserId { get; set; }
         public User User { get; set; }
 
         #endregion
