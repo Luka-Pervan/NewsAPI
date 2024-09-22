@@ -15,6 +15,7 @@ namespace NewsAPI.Models
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string Role { get; set; } // "Author" or "Reader"
+
         public Author Author { get; set; } // Navigation property to a single Author
 
         #endregion        

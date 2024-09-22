@@ -23,19 +23,22 @@ namespace NewsAPI.Data
         {
             base.OnModelCreating(modelBuilder);
 
-            // Fluent API configurations for relationships, constraints, etc.
+            // Article -> Author relationship
             modelBuilder.Entity<Article>()
                         .HasOne(a => a.Author)
-                        .WithMany(b => b.Articles)
-                        .HasForeignKey(a => a.AuthorId);
+                        .WithMany(b => b.Articles)   // An author can write many articles
+                        .HasForeignKey(a => a.AuthorId)
+                        .OnDelete(DeleteBehavior.Cascade);  // If the author is deleted, articles should also be deleted
 
+            // Author -> User relationship (Each Author is a User)
             modelBuilder.Entity<Author>()
-                .HasOne(a => a.User)
-                .WithOne() // Each User can have only one Author
-                .HasForeignKey<Author>(a => a.UserId)
-                .OnDelete(DeleteBehavior.Cascade); // Optional: set behavior on user deletion
+                .HasOne(a => a.User)              // One-to-one relationship with User
+                .WithOne(u => u.Author)           // User has a single Author associated
+                .HasForeignKey<Author>(a => a.AuthorUserId) // Foreign key in Author table referencing User
+                .OnDelete(DeleteBehavior.Restrict);  // Avoid deleting user when an author is deleted
 
         }
+
 
         #endregion
 
