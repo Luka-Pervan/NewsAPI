@@ -49,10 +49,11 @@
     public class LoginResult : Result
     {
         public string Token { get; private set; }
+        public string ExpDate { get; private set; }
 
-        public static LoginResult Success(string token)
+        public static LoginResult Success(string token, DateTime expDate)
         {
-            return new LoginResult { Succeeded = true, Token = token };
+            return new LoginResult { Succeeded = true, Token = token, ExpDate = expDate.ToString("dd.MM.yyyy. HH:mm:ss") };
         }
 
         public static new LoginResult Failure(string errorMessage)

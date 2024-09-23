@@ -49,7 +49,7 @@ public class UserService : IUserService
         {
             var user = await _userManager.FindByNameAsync(loginDto.Email);
             var token = GenerateJwtToken(user);
-            return LoginResult.Success(token);
+            return LoginResult.Success(token.TokenString, token.ExpDate);
         }
         return LoginResult.Failure("Invalid login attempt.");
     }
@@ -60,7 +60,7 @@ public class UserService : IUserService
     }
 
     #region Methods
-    private string GenerateJwtToken(User user)
+    private Token GenerateJwtToken(User user)
     {
         var claims = new List<Claim>
         {
@@ -68,8 +68,7 @@ public class UserService : IUserService
             new Claim(JwtRegisteredClaimNames.Email, user.Email),
         };
 
-        var roles = _userManager.GetRolesAsync(user).Result;
-        claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role)));
+        claims.Add(new Claim(ClaimTypes.Role, user.Role));
 
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
         var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
@@ -81,9 +80,12 @@ public class UserService : IUserService
             expires: DateTime.Now.AddMinutes(30),
             signingCredentials: creds
         );
-
-        return new JwtSecurityTokenHandler().WriteToken(token);
+        Token resultToken = new Token();
+        resultToken.TokenString = new JwtSecurityTokenHandler().WriteToken(token);
+        resultToken.ExpDate = DateTime.Now.AddMinutes(30);
+        return resultToken;
     }
+
     #endregion
 
 }
