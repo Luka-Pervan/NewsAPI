@@ -25,7 +25,7 @@ namespace NewsAPI.Controllers
         public async Task<IActionResult> GetAllArticles()
         {
             var result = await _articleService.GetAllArticlesAsync();
-            return Ok(result); // No need for Result<T> here as it's a plain retrieval
+            return Ok(result);
         }
 
         // GET: api/articles/{id}
@@ -34,16 +34,15 @@ namespace NewsAPI.Controllers
         {
             var result = await _articleService.GetArticleByIdAsync(id);
 
-            // Handle the case when the article is not found
             if (result == null)
                 return NotFound($"Article with id {id} not found.");
 
-            return Ok(result); // The result is directly returned as Article object
+            return Ok(result);
         }
 
         // POST: api/articles
         [HttpPost]
-        //[Authorize(Roles = "Admin, Author")]
+        [Authorize(Roles = "Admin, Author", AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> CreateArticle([FromBody] ArticleDto articleDto)
         {
             if (!ModelState.IsValid)
@@ -51,7 +50,6 @@ namespace NewsAPI.Controllers
 
             var result = await _articleService.CreateArticleAsync(articleDto);
 
-            // Check the result of the creation process
             if (!result.Succeeded)
                 return BadRequest(result.ErrorMessage);
 
@@ -59,8 +57,8 @@ namespace NewsAPI.Controllers
         }
 
         // PUT: api/articles/{id}
-        //[Authorize(Roles = "Admin, Author")]
         [HttpPut("{id}")]
+        [Authorize(Roles = "Admin, Author", AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> UpdateArticle(int id, [FromBody] ArticleDto articleDto)
         {
             if (!ModelState.IsValid)
@@ -68,25 +66,23 @@ namespace NewsAPI.Controllers
 
             var result = await _articleService.UpdateArticleAsync(id, articleDto);
 
-            // Handle failure cases
             if (!result.Succeeded)
                 return BadRequest(result.ErrorMessage);
 
-            return NoContent(); // Update successful
+            return NoContent();
         }
 
         // DELETE: api/articles/{id}
         [HttpDelete("{id}")]
-        //[Authorize(Roles = "Admin, Author")]
+        [Authorize(Roles = "Admin, Author", AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> DeleteArticle(int id)
         {
             var result = await _articleService.DeleteArticleAsync(id);
 
-            // Handle failure cases
             if (!result.Succeeded)
                 return BadRequest(result.ErrorMessage);
 
-            return NoContent(); // Deletion successful
+            return NoContent();
         }
 
     }

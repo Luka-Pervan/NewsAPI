@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using NewsAPI.DTOs;
 using NewsAPI.Services.Interfaces;
 
@@ -30,7 +31,7 @@ public class UsersController : ControllerBase
         var result = await _userService.LoginUserAsync(loginDto);
         if (result.Succeeded)
         {
-            return Ok(new { token = result.Token, expDate = result.ExpDate }); // Return the JWT token
+            return Ok(new { token = result.Token, expDate = result.ExpDate });
         }
         return BadRequest(result.ErrorMessage);
     }

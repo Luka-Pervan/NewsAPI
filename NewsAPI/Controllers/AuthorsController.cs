@@ -26,7 +26,7 @@ namespace NewsAPI.Controllers
             if (!result.Succeeded)
                 return BadRequest(result.ErrorMessage);
 
-            return Ok(result.Data); // Return the list of authors
+            return Ok(result.Data);
         }
 
         // GET: api/authors/{id}
@@ -38,16 +38,18 @@ namespace NewsAPI.Controllers
             if (!result.Succeeded)
                 return NotFound(result.ErrorMessage);
 
-            return Ok(result.Data); // Return the author object
+            return Ok(result.Data);
         }
 
         // POST: api/authors
         [HttpPost]
-        //[Authorize(Roles = "Admin")]
+        [Authorize(Policy = "Admin", AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> CreateAuthor([FromBody] AuthorDTO authorDto)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
+
+
 
             var result = await _authorService.CreateAuthorAsync(authorDto);
 
@@ -59,7 +61,7 @@ namespace NewsAPI.Controllers
 
         // PUT: api/authors/{id}
         [HttpPut("{id}")]
-        //[Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin, Author", AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> UpdateAuthor(int id, [FromBody] AuthorDTO authorDto)
         {
             if (!ModelState.IsValid)
@@ -70,12 +72,12 @@ namespace NewsAPI.Controllers
             if (!result.Succeeded)
                 return BadRequest(result.ErrorMessage);
 
-            return NoContent(); // Update successful
+            return NoContent();
         }
 
         // DELETE: api/authors/{id}
         [HttpDelete("{id}")]
-        //[Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin", AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> DeleteAuthor(int id)
         {
             var result = await _authorService.DeleteAuthorAsync(id);
@@ -83,7 +85,7 @@ namespace NewsAPI.Controllers
             if (!result.Succeeded)
                 return BadRequest(result.ErrorMessage);
 
-            return NoContent(); // Deletion successful
+            return NoContent();
         }
 
     }
