@@ -44,10 +44,10 @@ public class UserService : IUserService
 
     public async Task<LoginResult> LoginUserAsync(UserLoginDTO loginDto)
     {
-        var result = await _signInManager.PasswordSignInAsync(loginDto.Email, loginDto.Password, false, false);
+        var result = await _signInManager.PasswordSignInAsync(loginDto.Username, loginDto.Password, false, false);
         if (result.Succeeded)
         {
-            var user = await _userManager.FindByNameAsync(loginDto.Email);
+            var user = await _userManager.FindByNameAsync(loginDto.Username);
             var token = GenerateJwtToken(user);
             return LoginResult.Success(token.TokenString, token.ExpDate);
         }
